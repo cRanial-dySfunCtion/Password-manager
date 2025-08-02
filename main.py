@@ -6,97 +6,91 @@ conn = sqlite3.connect('database.db')
 c = conn.cursor()
 
 def newpassword():
-    secret = ""
-    doublesecret = ""
+    """make a new password that is 5 charactors long
+    returns the number and charactor passwords
+    the number gets stored in the database"""
+    password_charactors = ""
+    password_numbers = ""
 
-    num = random.randint(100, 125)
+    num = random.randint(100, 125) # get the ascii for the first charactor in the password  !!DO NOT TOUCH!!
 
-    secret = secret + chr(num)
-    doublesecret += str(num)
+    password_charactors += chr(num)
+    password_numbers += str(num)
 
     for i in range(4):
 
-        num = random.randint(33, 125)
+        num = random.randint(33, 125) # get the ascii for the rest of the charactors  !!DO NOT TOUCH!!
 
-        secret = secret + chr(num)
-        doublesecret += f'{num:03}'
+        password_charactors += chr(num)
+        password_numbers += f'{num:03}'
 
-    return int(doublesecret), secret
+    return int(password_numbers), password_charactors
 
-def encryption(code, method):
-    if method == 1:
-        return encrypt1(code)
-    elif method == 2:
-        return encrypt2(code)
-    elif method == 3:
-        return encrypt3(code)
 
-def encrypt1(code):
-    encode = (code  * 5)
-    return encode
+class encryptions():
+    
+    def method1(code):
+        encode = (code * 5)
+        return encode
+    
+    def method2(code):
+        encode = (pow(code,2)+5)
+        return encode
+    
+    def method3(code):
+        encode = (((((((code+5)*2)-10)*2)+15)-9)*2)
+        return encode
 
-def decrypt1(encode):
-    codetwo = (encode // 5)
-    return codetwo
 
-def encrypt2(code):
-    encode = (pow(code,2)+5)
-    return encode
+class decryptions():
+    def method1(encode):
+        codetwo = (encode // 5)
+        return codetwo
 
-def decrypt2(encode):
-    codetwo = int(math.sqrt(encode-5))
-    return codetwo
+    def method2(encode):
+        codetwo = int(math.sqrt(encode-5))
+        return codetwo
 
-def encrypt3(code):
-    encode = (((((((code+5)*2)-10)*2)+15)-9)*2)
-    return encode
+    def method3(encode):
+        codetwo = int(((((((encode/2)+9)-15)/2)+10)/2)-5)
+        return codetwo
 
-def decrypt3(encode):
-    codetwo = int(((((((encode/2)+9)-15)/2)+10)/2)-5)
-    return codetwo
-
-def decryption(code, method):
-    if method == 1:
-        return decrypt1(code)
-    elif method == 2:
-        return decrypt2(code)
-    elif method == 3:
-        return decrypt3(code)
-
-def encrypt():
+def encrypt_function():
     key = random.randint(1, 3)
-    secretbefore = ''
-    ahhh = ''
-    wyr = ''
+    encryption_methods = {1: encryptions.method1, 2: encryptions.method2, 3: encryptions.method3}
+    full_charactor_password = ''
+    full_number_password = ''
+
     for x in range(3):
-        test, secretnonbi = newpassword()
-        secretbefore = secretbefore + secretnonbi
-        if len(ahhh) > 0:
-            ahhh += '.'
-        ahhh = str(ahhh) + str(encryption(test, key))
+        number_password_befor_encryption, charactor_password = newpassword()
+        full_charactor_password += charactor_password
+        if len(full_number_password) > 0:
+            full_number_password += '.'
+        full_number_password += str(encryption_methods[key](number_password_befor_encryption))
 
-        wyr = wyr + str(test)
-    print(secretbefore)
-    return ahhh, key # to db
+    print(full_charactor_password)
 
-def decrypt(code, key):
-    place = 0
+    return full_number_password, key # to db
+    return full_number_password, key, full_charactor_password # for testing
+
+def decrypt_function(code, key):
+    decryption_methods = {1: decryptions.method1, 2: decryptions.method2, 3: decryptions.method3}
     split_list = code.split('.')
-    dio = ''
-    for x in range(3):
-        ree = decryption(int(split_list[place]), key)
-        dio = dio + str(ree)
-        place = place + 1
+    decrypted_number_password = ''
 
+    # decrypt the number password
+    for place in range(3):
+        decrypted_number_password += str(decryption_methods[key](int(split_list[place])))
 
-    temp = dio
+    #convert back into charactors
     decrypted_password = ''
-    while len(temp) > 0:
-        i = temp[:3]
-        decrypted_password += chr(int(i))
-        temp = temp[3:]
+    while len(decrypted_number_password) > 0:
+        number = decrypted_number_password[:3]
+        decrypted_password += chr(int(number))
+        decrypted_number_password = decrypted_number_password[3:]
 
     print(decrypted_password)
+    return decrypted_password
 
 
 

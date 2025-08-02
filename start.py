@@ -1,4 +1,4 @@
-import main
+from main import *
 
 
 print("1. Register new site")
@@ -9,26 +9,31 @@ q = int(input(""))
 if q == 1:
     q1 = input("Site: ")
     q3 = input("Username: ")
-    code, key = main.encrypt()
-    main.sendDB(code, q1, key, q3)
+    code, key = encrypt_function()
+    sendDB(code, q1, key, q3)
 else:
     q1 = input("site: ")
-    code, key, name = main.findDB(q1)
+    code, key, name = findDB(q1)
     print("Username: " + name)
-    main.decrypt(code, key)
+    if key != 0:
+        decrypt_function(code, key)
+    else:
+        print(code)
 
 
 # fails = 0
-# yay = 0
+# successes = 0
 # while True:
 #     for x in range(3):
-#         code, key, secret= main.encrypt()
-#         print(key)
-#         ensecret = main.decrypt(code, key)
+#         code, key, secret= encrypt_function()
+#         # print(key)
+#         ensecret = decrypt_function(code, key)
 #         if secret != ensecret:
 #             fails = fails+1
-#             print("THis failed: " + secret)
+#             print("This failed: " + secret)
 #         else:
-#             yay = yay +1
-#             if yay % 10000 == 0:
-#                 print(f'Number of successes: {yay}, number of failures: {fails}')
+#             successes += 1
+#             if successes % 10000 == 0:
+#                 print(f'Number of successes: {successes}, number of failures: {fails}')
+
+
